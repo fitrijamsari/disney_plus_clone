@@ -1,44 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useParams, Link } from "react-router-dom";
+import db from "../firebase";
 
 function Detail() {
+  const { id } = useParams();
+  // console.log(id);
+
+  const [movie, setMovie] = useState();
+
+  useEffect(() => {
+    //grab movie from db
+    db.collection("movies")
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          //if doc with the id exist, save the data to state
+          setMovie(doc.data());
+        } else {
+          //redirect to homepage
+          <Link to="/"></Link>;
+        }
+      });
+  }, []);
+
+  console.log("Movie is", movie);
+
   return (
     <Container>
-      <Background>
-        <img
-          src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/4F39B7E16726ECF419DD7C49E011DD95099AA20A962B0B10AA1881A70661CE45/scale?width=1440&aspectRatio=1.78&format=jpeg"
-          alt=""
-        />
-      </Background>
-      <ImgTitle>
-        <img
-          src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/D7AEE1F05D10FC37C873176AAA26F777FC1B71E7A6563F36C6B1B497CAB1CEC2/scale?width=1440&aspectRatio=1.78"
-          alt=""
-        />
-      </ImgTitle>
-      <Controls>
-        <PlayButton>
-          <img src="/images/play-icon-black.png" alt="" />
-          <span>PLAY</span>
-        </PlayButton>
-        <TrailerButton>
-          <img src="/images/play-icon-white.png" alt="" />
-          <span>TRAILER</span>
-        </TrailerButton>
-        <AddButton>
-          <span>+</span>
-        </AddButton>
-        <GroupWatchButton>
-          <img src="/images/group-icon.png" alt="" />
-        </GroupWatchButton>
-      </Controls>
-      <SubTitle>2018 * 7m * Family, Fantasy, Kids, Animation</SubTitle>
-      <Description>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laboriosam,
-        quae nihil aliquid rerum illo vitae vero blanditiis iusto? Deserunt
-        numquam asperiores reiciendis voluptatem illum delectus omnis
-        accusantium tempora laborum quod?
-      </Description>
+      {/* kuar error movie undefined, sbb useEffect take a few sec to fetch data from db, so  but logic if movie true or exist..baru load data*/}
+
+      {movie && (
+        <>
+          <Background>
+            <img src={movie.backgroundImg} alt="" />
+          </Background>
+          <ImgTitle>
+            <img src={movie.titleImg} alt="" />
+          </ImgTitle>
+          <Controls>
+            <PlayButton>
+              <img src="/images/play-icon-black.png" alt="" />
+              <span>PLAY</span>
+            </PlayButton>
+            <TrailerButton>
+              <img src="/images/play-icon-white.png" alt="" />
+              <span>TRAILER</span>
+            </TrailerButton>
+            <AddButton>
+              <span>+</span>
+            </AddButton>
+            <GroupWatchButton>
+              <img src="/images/group-icon.png" alt="" />
+            </GroupWatchButton>
+          </Controls>
+          <SubTitle>{movie.subTitle}</SubTitle>
+          <Description>{movie.description}</Description>
+        </>
+      )}
     </Container>
   );
 }

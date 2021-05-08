@@ -4,8 +4,12 @@ import ImgSlider from "./ImgSlider";
 import Viewer from "./Viewer";
 import Movies from "./Movies";
 import db from "../firebase";
+import { useDispatch } from "react-redux";
+import { setMovies } from "../features/movie/movieSlice";
 
 function Home() {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     db.collection("movies").onSnapshot((snapshot) => {
       // console.log(snapshot);
@@ -13,7 +17,9 @@ function Home() {
         // console.log(doc.data());
         return { id: doc.id, ...doc.data() };
       });
-      console.log(tempMovies);
+      // console.log(tempMovies);
+      // so we grab data, then dispatch action to save the movies to store
+      dispatch(setMovies(tempMovies));
     });
   }, []);
 
